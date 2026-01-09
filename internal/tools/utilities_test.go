@@ -23,7 +23,7 @@ var readFileFunc = readFileHelper
 
 // Create a modified version of ExtractTextFromLocation that uses our mockable function
 func extractTextFromLocationForTest(loc protocol.Location) (string, error) {
-	path := strings.TrimPrefix(string(loc.URI), "file://")
+	path := loc.URI.Path()
 
 	content, err := readFileFunc(path)
 	if err != nil {

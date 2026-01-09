@@ -17,3 +17,6 @@ integrationtests/workspaces/clangd/.cache
 CLAUDE.md*
 .mcp.json
 .goosehints
+.jj
+*.exe
+.claude

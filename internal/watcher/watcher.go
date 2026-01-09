@@ -488,7 +488,7 @@ func (w *WorkspaceWatcher) matchesPattern(path string, pattern protocol.GlobPatt
 	}
 
 	// For relative patterns
-	basePath = strings.TrimPrefix(basePath, "file://")
+	basePath = protocol.DocumentUri(basePath).Path()
 	basePath = filepath.ToSlash(basePath)
 
 	// Make path relative to basePath for matching

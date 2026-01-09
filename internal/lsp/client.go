@@ -12,7 +12,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
 	"github.com/isaacphi/mcp-language-server/internal/protocol"
 )
 
@@ -21,6 +20,9 @@ type Client struct {
 	stdin  io.WriteCloser
 	stdout *bufio.Reader
 	stderr io.ReadCloser
+
+	// Protect writes to the LSP server stdin so messages don't interleave
+	writeMu sync.Mutex
 
 	// Request ID counter
 	nextID atomic.Int32
@@ -409,7 +411,7 @@ func (c *Client) CloseAllFiles(ctx context.Context) {
 	// First collect all URIs that need to be closed
 	for uri := range c.openFiles {
 		// Convert URI back to file path by trimming "file://" prefix
-		filePath := strings.TrimPrefix(uri, "file://")
+		filePath := protocol.DocumentUri(uri).Path()
 		filesToClose = append(filesToClose, filePath)
 	}
 	c.openFilesMu.Unlock()

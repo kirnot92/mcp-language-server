@@ -653,7 +653,7 @@ func TestApplyTextEdits(t *testing.T) {
 				if err != nil {
 					t.Errorf("Unexpected error: %v", err)
 				} else {
-					path := strings.TrimPrefix(string(tt.uri), "file://")
+					path := tt.uri.URI.Path()
 					if content, ok := mfs.files[path]; ok {
 						if string(content) != tt.expected {
 							t.Errorf("applyTextEdits() result = %q, want %q", string(content), tt.expected)

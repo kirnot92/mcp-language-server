@@ -216,10 +216,13 @@ func (c *Client) Call(ctx context.Context, method string, params any, result any
 		c.handlersMu.Unlock()
 	}()
 
-	// Send request
-	if err := WriteMessage(c.stdin, msg); err != nil {
-		return fmt.Errorf("failed to send request: %w", err)
-	}
+    // Send request (serialize writes to stdin)
+    c.writeMu.Lock()
+    err = WriteMessage(c.stdin, msg)
+    c.writeMu.Unlock()
+    if err != nil {
+        return fmt.Errorf("failed to send request: %w", err)
+    }
 
 	lspLogger.Debug("Waiting for response to request ID: %v", msg.ID)
 
@@ -258,9 +261,13 @@ func (c *Client) Notify(ctx context.Context, method string, params any) error {
 		return fmt.Errorf("failed to create notification: %w", err)
 	}
 
-	if err := WriteMessage(c.stdin, msg); err != nil {
-		return fmt.Errorf("failed to send notification: %w", err)
-	}
+    // Serialize writes to stdin
+    c.writeMu.Lock()
+    err = WriteMessage(c.stdin, msg)
+    c.writeMu.Unlock()
+    if err != nil {
+        return fmt.Errorf("failed to send notification: %w", err)
+    }
 
 	return nil
 }
